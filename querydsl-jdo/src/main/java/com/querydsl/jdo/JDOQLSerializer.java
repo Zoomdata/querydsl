@@ -24,6 +24,7 @@ import com.querydsl.core.JoinExpression;
 import com.querydsl.core.QueryMetadata;
 import com.querydsl.core.support.SerializerBase;
 import com.querydsl.core.types.*;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.Param;
 
 /**
@@ -281,11 +282,17 @@ public final class JDOQLSerializer extends SerializerBase<JDOQLSerializer> {
             Constant<Class<?>> rightArg = (Constant<Class<?>>) args.get(1);
             append(rightArg.getConstant().getName());
 
-        } else if (operator == Ops.LIKE || operator == Ops.LIKE_ESCAPE) {
+        } else if (operator == Ops.LIKE || operator == Ops.LIKE_ESCAPE || operator == Ops.LIKE_IC || operator == Ops.LIKE_ESCAPE_IC) {
             @SuppressWarnings("unchecked") //This is the expected type for like
-            Expression<String> rightArg = (Expression<String>) args.get(1);
+            Expression<String> string = (Expression<String>) args.get(0);
+            @SuppressWarnings("unchecked") //This is the expected type for like
+            Expression<String> regex = ExpressionUtils.likeToRegex((Expression<String>) args.get(1), false);
+            if (operator == Ops.LIKE_IC || operator == Ops.LIKE_ESCAPE_IC) {
+                string = Expressions.stringOperation(Ops.LOWER, string);
+                regex = Expressions.stringOperation(Ops.LOWER, regex);
+            }
             super.visitOperation(type, Ops.MATCHES,
-                ImmutableList.of(args.get(0), ExpressionUtils.likeToRegex(rightArg, false)));
+                ImmutableList.of(string, regex));
 
         // exists
         } else if (operator == Ops.EXISTS && args.get(0) instanceof SubQueryExpression) {

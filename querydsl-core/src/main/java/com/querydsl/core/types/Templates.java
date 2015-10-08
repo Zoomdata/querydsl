@@ -144,7 +144,9 @@ public class Templates {
         add(Ops.INDEX_OF_2ARGS, "indexOf({0},{1},{2})");
         add(Ops.STRING_IS_EMPTY, "empty({0})");
         add(Ops.LIKE, "{0} like {1}", Precedence.COMPARISON);
+        add(Ops.LIKE_IC, "{0l} like {1l}", Precedence.COMPARISON);
         add(Ops.LIKE_ESCAPE, "{0} like {1} escape '{2s}'", Precedence.COMPARISON);
+        add(Ops.LIKE_ESCAPE_IC, "{0l} like {1l} escape '{2s}'", Precedence.COMPARISON);
 
         add(Ops.StringOps.LEFT, "left({0},{1})");
         add(Ops.StringOps.RIGHT, "right({0},{1})");
